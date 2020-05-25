@@ -1,0 +1,7 @@
+image: clojure
+tasks:
+  - command: ./setup-git.sh
+    name: Change git credential
+vscode:
+  extensions:
+    - betterthantomorrow.calva@2.0.85:3xoOa+PKIAT1KeoQ8mF/OQ==
