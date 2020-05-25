@@ -1,4 +1,5 @@
-image: clojure
+image:
+  file: Dockerfile
 tasks:
   - command: ./setup-git.sh
     name: Change git credential
