@@ -11,4 +11,5 @@
                  [io.swagger.parser.v3/swagger-parser "2.0.20"]]
   :main ^:skip-aot swagger-data.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+             :dev {}})
