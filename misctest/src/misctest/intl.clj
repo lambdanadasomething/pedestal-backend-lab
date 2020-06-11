@@ -1,5 +1,6 @@
 (ns misctest.intl
-  (:require [taoensso.tower :as tower :refer (with-tscope)]))
+  (:require [taoensso.tower :as tower :refer (with-tscope)]
+            [tongue.core :as tongue]))
 
 (def my-tconfig
   {:dictionary ; Map or named resource containing map
@@ -45,4 +46,56 @@
 
 (mapv #(tower/fmt-msg :de "{0,choice,0#no cats|1#one cat|1<{0,number} cats}" %)
       (range 5))
+
+; Now come to tongue
+
+(def dicts
+  { :en { ;; simple keys
+          :color "Color"
+          :flower "Flower"
+ 
+          ;; namespaced keys
+          :weather/rain   "Rain"
+          :weather/clouds "Clouds"
+ 
+          ;; nested maps will be unpacked into namespaced keys
+          ;; this is purely for ease of dictionary writing
+          :animals { :dog "Dog"   ;; => :animals/dog
+                     :cat "Cat" } ;; => :animals/cat
+ 
+          ;; substitutions
+          :welcome "Hello, {1}!"
+          :between "Value must be between {1} and {2}"
+          ;; For using a map
+          :mail-title "{user}, {title} - Message received."
+ 
+          ;; arbitrary functions
+          :count (fn [x]
+                   (cond
+                     (zero? x) "No items"
+                     (= 1 x)   "1 item"
+                     :else     "{1} items")) ;; you can return string with substitutions
+        }
+ 
+    :en-GB { :color "colour" } ;; sublang overrides
+    :tongue/fallback :en }     ;; fallback locale key
+)
+
+(def translate (tongue/build-translate dicts))
+
+(translate :en :color)
+(translate :en :animals/dog)
+
+(translate :en :welcome "Nikita")
+(translate :en :between 0 103)
+(translate :en :mail-title {:user "Elizabeth" :title "New message"})
+
+(translate :en :count 4)
+
+(translate :en-GB :color)
+
+(def format-number-en
+  (tongue/number-formatter {:group "," :decimal "."}))
+
+(format-number-en 9999.9)
 
