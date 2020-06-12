@@ -24,6 +24,11 @@
   [request]
   (ring-resp/response "Hello World! Mad Max"))
 
+(defn sample-api
+  [req]
+  (let [b (:body-params req)]
+    {:status 200 :body {:success true :id 123 :info "Okay." :data (:foo b)}}))
+
 ;; Defines "/" and "/about" routes with their associated :get handlers.
 ;; The interceptors defined after the verb map (e.g., {:get home-page}
 ;; apply to / and its children (/about).
@@ -31,7 +36,8 @@
 
 ;; Tabular routes
 (def routes #{["/" :get (conj common-interceptors `home-page)]
-              ["/about" :get (conj common-interceptors `about-page)]})
+              ["/about" :get (conj common-interceptors `about-page)]
+              ["/sample" :post [`sample-api]]})
 
 ;; Map-based routes
 ;(def routes `{"/" {:interceptors [(body-params/body-params) http/html-body]
