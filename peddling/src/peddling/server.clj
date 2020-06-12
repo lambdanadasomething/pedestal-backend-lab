@@ -1,8 +1,10 @@
 (ns peddling.server
-  (:gen-class) ; for -main method in uberjar
+  ;(:gen-class) ; for -main method in uberjar
   (:require [io.pedestal.http :as server]
             [io.pedestal.http.route :as route]
-            [peddling.service :as service]))
+            [peddling.service :as service]
+            [jsonista.core :as jn]
+            [muuntaja.interceptor :as muint]))
 
 ;; This is an adapted service map, that can be started and stopped
 ;; From the REPL you can call server/start and server/stop on this service
@@ -26,7 +28,7 @@
       ;; Wire up interceptor chains
       server/default-interceptors
       server/dev-interceptors
-      (update ::server/interceptors conj service/what-a-lab)
+      (update ::server/interceptors conj muint/format-interceptor)
       server/create-server
       server/start))
 
