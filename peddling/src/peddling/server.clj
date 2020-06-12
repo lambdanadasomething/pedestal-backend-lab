@@ -26,6 +26,7 @@
       ;; Wire up interceptor chains
       server/default-interceptors
       server/dev-interceptors
+      (update ::server/interceptors conj service/what-a-lab)
       server/create-server
       server/start))
 

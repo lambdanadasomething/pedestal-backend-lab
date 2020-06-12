@@ -2,7 +2,17 @@
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [io.pedestal.http.body-params :as body-params]
-            [ring.util.response :as ring-resp]))
+            [ring.util.response :as ring-resp]
+            [io.pedestal.interceptor :as i]
+            [io.pedestal.interceptor.chain :as chain]
+            [io.pedestal.interceptor.error :as err]))
+
+; Let's try our own intercepters
+(def what-a-lab
+  (i/interceptor
+   {:name ::what-a-lab
+    :enter (fn [context]
+             (println "Getting in..."))}))
 
 (defn about-page
   [request]
@@ -12,7 +22,7 @@
 
 (defn home-page
   [request]
-  (ring-resp/response "Hello World!"))
+  (ring-resp/response "Hello World! Mad Max"))
 
 ;; Defines "/" and "/about" routes with their associated :get handlers.
 ;; The interceptors defined after the verb map (e.g., {:get home-page}
