@@ -8,7 +8,8 @@
                  [frankiesardo/route-swagger "0.1.4"]
                  [pedestal-api "0.3.4"]
                  [swagger-spec "0.5.0"]
-                 [io.swagger.parser.v3/swagger-parser "2.0.20"]]
+                 [io.swagger.parser.v3/swagger-parser "2.0.20"]
+                 [com.walmartlabs/lacinia "0.37.0-alpha-2"]]
   :main ^:skip-aot swagger-data.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
