@@ -17,7 +17,8 @@
                  [org.slf4j/jcl-over-slf4j "1.7.26"]
                  [org.slf4j/log4j-over-slf4j "1.7.26"]
                  [metosin/muuntaja "0.6.7"]
-                 [metosin/jsonista "0.2.6"]]
+                 [metosin/jsonista "0.2.6"]
+                 [com.walmartlabs/lacinia-pedestal "0.14.0-alpha-2"]]
   :min-lein-version "2.0.0"
   :resource-paths ["config", "resources"]
   ;; If you use HTTP/2 or ALPN, use the java-agent to pull in the correct alpn-boot dependency

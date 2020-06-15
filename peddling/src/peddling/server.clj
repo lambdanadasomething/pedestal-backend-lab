@@ -28,7 +28,7 @@
       ;; Wire up interceptor chains
       server/default-interceptors
       server/dev-interceptors
-      (update ::server/interceptors conj (io.pedestal.interceptor/interceptor (muint/format-interceptor)))
+      ;(update ::server/interceptors conj (io.pedestal.interceptor/interceptor (muint/format-interceptor)))
       server/create-server
       server/start))
 

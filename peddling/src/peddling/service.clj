@@ -5,7 +5,12 @@
             [ring.util.response :as ring-resp]
             [io.pedestal.interceptor :as i]
             [io.pedestal.interceptor.chain :as chain]
-            [io.pedestal.interceptor.error :as err]))
+            [io.pedestal.interceptor.error :as err]
+            [com.walmartlabs.lacinia.util :refer [attach-resolvers]]
+            [com.walmartlabs.lacinia.schema :as lacschema]
+            [com.walmartlabs.lacinia.pedestal2 :as p2]
+            [clojure.edn :as edn]
+            [clojure.set :as ss]))
 
 ; Let's try our own intercepters
 (def what-a-lab
@@ -26,8 +31,33 @@
 
 (defn sample-api
   [req]
-  (let [b (:body-params req)]
-    {:status 200 :body {:success true :id 123 :info "Okay." :data (:foo b)}}))
+  (let [b (:body-params req)
+        creq (:charset (:muuntaja/request req))
+        cres (:charset (:muuntaja/response req))]
+    {:status 200 :body {:success true :id 123 :info "Okay." :data (:foo b) 
+                        :creq creq :cres cres}}))
+
+; Lacinia Pedestal integration test
+; Let's try basic stuff first
+(defn get-hero [context arguments value]
+  (let [{:keys [episode]} arguments]
+    (if (= episode :NEWHOPE)
+      {:id 1000
+       :name "Luke"
+       :home_planet "Tatooine"
+       :appears_in ["NEWHOPE" "EMPIRE" "JEDI"]}
+      {:id 2000
+       :name "Lando Calrissian"
+       :home_planet "Socorro"
+       :appears_in ["EMPIRE" "JEDI"]})))
+
+(def star-wars-schema
+  (-> "resources/lacinia-schema.edn"
+      slurp
+      edn/read-string
+      (attach-resolvers {:get-hero get-hero
+                         :get-droid (constantly {})})
+      lacschema/compile))
 
 ;; Defines "/" and "/about" routes with their associated :get handlers.
 ;; The interceptors defined after the verb map (e.g., {:get home-page}
@@ -35,9 +65,15 @@
 (def common-interceptors [(body-params/body-params) http/html-body])
 
 ;; Tabular routes
-(def routes #{["/" :get (conj common-interceptors `home-page)]
-              ["/about" :get (conj common-interceptors `about-page)]
-              ["/sample" :post [`sample-api]]})
+(def routes (ss/union 
+             #{["/" :get (conj common-interceptors `home-page)]
+               ["/about" :get (conj common-interceptors `about-page)]
+               ["/sample" :post [`sample-api]]
+               ["/graphql/q" :post (p2/default-interceptors star-wars-schema {:foo 42} )]
+               ["/graphql/ide" :get (p2/graphiql-ide-handler {:api-path "/graphql/q" :asset-path "/graphql/assets"})
+                :route-name ::graphiql-ide]
+               }
+             (p2/graphiql-asset-routes "/graphql/assets")))
 
 ;; Map-based routes
 ;(def routes `{"/" {:interceptors [(body-params/body-params) http/html-body]
