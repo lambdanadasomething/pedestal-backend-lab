@@ -28,7 +28,17 @@
                        {:status 200
                         :body {:name post-name
                                :cmt comment-id
-                               :rnd (rand-int 30) }})}}]]
+                               :rnd (rand-int 30) }})}}]
+    ["/survey"
+     {:put {:parameters {:body [:map {:closed true}
+                                [:submit-uuid :string]
+                                [:name :string]
+                                [:ans1 [:enum "yes" "no" "neither"]]
+                                [:additional-comment {:optional true} [:string {:max 1000}]]]}
+            :responses {200 {:body [:string]}}
+            :handler (fn [_]
+                       {:status 200
+                        :body "Thanks for helping us!"})}}]]
  ;option map for http/router
    {:reitit.interceptor/transform dev/print-context-diffs ;; pretty context diffs
     :validate rs/validate ;; enable spec validation for the routes itself
